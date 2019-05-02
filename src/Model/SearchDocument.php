@@ -76,8 +76,14 @@ class SearchDocument extends DataObject
                     if ($class !== ElementalArea::class) {
                         continue;
                     }
-                    /** @var ElementalArea $area */
+                    
+                    /** @var ElementalArea|Versioned $area */
                     $area = $origin->$key();
+                    
+                    if( $area->hasExtension(Versioned::class)){
+                        $area = Versioned::get_by_stage($class, Versioned::LIVE)->byID($area->ID);
+                    }
+    
                     if ($area && $area->exists()) {
                         $output[] = $area->forTemplate();
                     }
