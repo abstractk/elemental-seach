@@ -36,5 +36,10 @@ class SiteTreeDocumentGenerator extends SearchDocumentGenerator
     {
         self::delete_doc($this->owner);
     }
+	
+	public function onAfterUnpublish()
+	{
+		self::delete_doc($this->owner);
+	}
 
 }
