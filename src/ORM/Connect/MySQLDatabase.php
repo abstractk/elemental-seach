@@ -9,24 +9,16 @@
 
 namespace SilverStripers\ElementalSearch\ORM\Connect;
 
-use DNADesign\Elemental\Models\BaseElement;
-use DNADesign\Elemental\Models\ElementalArea;
 use Exception;
 use SilverStripe\Assets\File;
-use SilverStripe\CMS\Model\SiteTree;
-use SilverStripe\Core\ClassInfo;
 use SilverStripe\Core\Convert;
 use SilverStripe\ORM\ArrayList;
+use SilverStripe\ORM\Connect\MySQLDatabase as SS_MySQLDatabase;
 use SilverStripe\ORM\DataList;
 use SilverStripe\ORM\DataObject;
-use SilverStripe\ORM\DB;
 use SilverStripe\ORM\PaginatedList;
 use SilverStripe\ORM\Queries\SQLSelect;
-use SilverStripe\ORM\Connect\MySQLDatabase as SS_MySQLDatabase;
-use SilverStripe\Versioned\Versioned;
 use SilverStripers\ElementalSearch\Model\SearchDocument;
-use SilverStripers\ElementalSearch\ORM\Search\FulltextSearchable;
-
 
 
 class MySQLDatabase extends SS_MySQLDatabase
@@ -167,8 +159,8 @@ class MySQLDatabase extends SS_MySQLDatabase
             $totalCount += $query->unlimitedRowCount();
         }
         $fullQuery = implode(" UNION ", $querySQLs) . " ORDER BY $sortBy LIMIT $limit";
-
-        // Get records
+	
+	    // Get records
         $records = $this->preparedQuery($fullQuery, $queryParameters);
 
         $objects = array();
