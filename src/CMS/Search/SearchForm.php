@@ -13,6 +13,8 @@ use BadMethodCallException;
 use SilverStripe\Assets\File;
 use SilverStripe\CMS\Model\SiteTree;
 use SilverStripe\CMS\Search\SearchForm as SS_SearchForm;
+use SilverStripe\Core\Injector\Injector;
+use SilverStripe\Dev\Debug;
 use SilverStripe\ORM\DB;
 use SilverStripers\ElementalSearch\Model\SearchDocument;
 
@@ -103,6 +105,10 @@ class SearchForm extends SS_SearchForm
 		// filter by permission
 		if ($results) {
 			foreach ($results as $result) {
+				if( empty($result) ){
+					$results->remove($result);
+					continue;
+				}
 				if (!$result->canView()) {
 					$results->remove($result);
 				}
