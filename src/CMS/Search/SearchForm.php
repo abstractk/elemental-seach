@@ -105,12 +105,15 @@ class SearchForm extends SS_SearchForm
 		$extra_file_filter = '';
 		$this->extend('updateExtraFileFilter', $request_vars, $extra_file_filter);
 		
+		$sort_by = "\"Relevance\" DESC";
+		$this->extend('updateSortBy', $request_vars, $sort_by);
+		
 		$booleanSearch =
 			strpos($keywords, '"') !== false ||
 			strpos($keywords, '+') !== false ||
 			strpos($keywords, '-') !== false ||
 			strpos($keywords, '*') !== false;
-		$results = DB::get_conn()->searchEngine($this->classesToSearch, $keywords, $start, $pageLength, "\"Relevance\" DESC", $extraFilter, $booleanSearch, $extra_file_filter);
+		$results = DB::get_conn()->searchEngine($this->classesToSearch, $keywords, $start, $pageLength, $sort_by, $extraFilter, $booleanSearch, $extra_file_filter);
 		
 		// filter by permission
 		if ($results) {
