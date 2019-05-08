@@ -90,7 +90,10 @@ class SearchDocument extends DataObject
                 }
             }
             else {
-                $output[] = Director::test($searchLink);
+            	//check if page needs to be scanned
+	            $scan_page = $origin->config()->get('elemental_search_scan_page');
+	            if( $scan_page !== false )
+                    $output[] = Director::test($searchLink);
             }
 
             // any fields mark to search
