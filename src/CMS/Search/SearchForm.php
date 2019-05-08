@@ -15,7 +15,9 @@ use SilverStripe\CMS\Model\SiteTree;
 use SilverStripe\CMS\Search\SearchForm as SS_SearchForm;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Dev\Debug;
+use SilverStripe\ORM\ArrayList;
 use SilverStripe\ORM\DB;
+use SilverStripe\ORM\PaginatedList;
 use SilverStripers\ElementalSearch\Model\SearchDocument;
 
 class SearchForm extends SS_SearchForm
@@ -69,6 +71,14 @@ class SearchForm extends SS_SearchForm
 		}
 		
 		$keywords = $request->requestVar('Search');
+		if( ctype_space($keywords) ){
+			
+			$list = new PaginatedList(new ArrayList([]));
+			$list->setPageStart(0);
+			$list->setPageLength(1);
+			$list->setTotalItems(0);
+			return $list;
+		}
 		
 		$andProcessor = function ($matches) {
 			return ' +' . $matches[2] . ' +' . $matches[4] . ' ';
