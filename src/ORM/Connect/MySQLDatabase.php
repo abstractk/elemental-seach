@@ -10,8 +10,10 @@
 namespace SilverStripers\ElementalSearch\ORM\Connect;
 
 use Exception;
+use Psr\Log\LoggerInterface;
 use SilverStripe\Assets\File;
 use SilverStripe\Core\Convert;
+use SilverStripe\Core\Injector\Injector;
 use SilverStripe\ORM\ArrayList;
 use SilverStripe\ORM\Connect\MySQLDatabase as SS_MySQLDatabase;
 use SilverStripe\ORM\DataList;
@@ -118,7 +120,7 @@ class MySQLDatabase extends SS_MySQLDatabase
                 "MenuTitle" => "_{$charset}''",
                 "URLSegment" => "_{$charset}''",
                 "Content",
-                "LastEdited" => "_{$charset}''",
+                "LastEdited",
                 "Created" => "_{$charset}''",
                 "Name" => "_{$charset}''",
                 "Relevance" => $relevance[$documentClass],
@@ -159,6 +161,8 @@ class MySQLDatabase extends SS_MySQLDatabase
             $totalCount += $query->unlimitedRowCount();
         }
         $fullQuery = implode(" UNION ", $querySQLs) . " ORDER BY $sortBy LIMIT $limit";
+        
+        Injector::inst()->get(LoggerInterface::class)->debug('query: ' . $fullQuery);
 	
 	    // Get records
         $records = $this->preparedQuery($fullQuery, $queryParameters);
