@@ -72,7 +72,7 @@ class SearchForm extends SS_SearchForm
 		
 		$keywords = $request->requestVar('Search');
 		if( ctype_space($keywords) ){
-			
+
 			$list = new PaginatedList(new ArrayList([]));
 			$list->setPageStart(0);
 			$list->setPageLength(1);
@@ -115,19 +115,6 @@ class SearchForm extends SS_SearchForm
 			strpos($keywords, '*') !== false;
 		$results = DB::get_conn()->searchEngine($this->classesToSearch, $keywords, $start, $pageLength, $sort_by, $extraFilter, $booleanSearch, $extra_file_filter);
 		
-		// filter by permission
-		if ($results) {
-			foreach ($results as $result) {
-				if( empty($result) ){
-					$results->remove($result);
-					continue;
-				}
-				if (!$result->canView()) {
-					$results->remove($result);
-				}
-			}
-		}
-		
 		// reset locale
 		if (class_exists('Translatable')) {
 			if (SiteTree::singleton()->hasExtension('Translatable') && $locale) {
@@ -142,6 +129,4 @@ class SearchForm extends SS_SearchForm
 		return $results;
 	}
 	
-	
-
 }
