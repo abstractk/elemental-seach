@@ -16,7 +16,7 @@ use SilverStripe\Core\Config\Config;
 use SilverStripe\Dev\BuildTask;
 use SilverStripe\ORM\DataList;
 use SilverStripe\ORM\DataObject;
-use SilverStripers\ElementalSearch\Extensions\ElementDocumentGeneratorExtension;
+use SilverStripe\Versioned\Versioned;
 use SilverStripers\ElementalSearch\Extensions\SearchDocumentGenerator;
 use SilverStripers\ElementalSearch\Extensions\SiteTreeDocumentGenerator;
 
@@ -38,18 +38,34 @@ class GenerateSearchDocument extends BuildTask
     {
         set_time_limit(50000);
         $classes = $this->getAllSearchDocClasses();
+        
         foreach ($classes as $class) {
-            foreach ($list = DataList::create($class) as $record) {
-				echo sprintf(
-						'Making record for %s type %s, link %s',
-						$record->getTitle(),
-						$record->ClassName,
-						$record->getGenerateSearchLink()) . '<br>';
-				try {
-					SearchDocumentGenerator::make_document_for($record);
-				} catch (Exception $e) {
-				}
-            }
+        	$versioned = singleton($class)->hasExtension(Versioned::class);
+        	if( $versioned ){
+		        foreach ($list = Versioned::get_by_stage($class, Versioned::LIVE) as $record) {
+			        echo sprintf(
+				             'Making record for %s type %s, link %s',
+				             $record->getTitle(),
+				             $record->ClassName,
+				             $record->getGenerateSearchLink()) . '<br>';
+			        try {
+				        SearchDocumentGenerator::make_document_for($record);
+			        } catch (Exception $e) {
+			        }
+		        }
+	        } else {
+		        foreach ($list = DataList::create($class) as $record) {
+			        echo sprintf(
+				             'Making record for %s type %s, link %s',
+				             $record->getTitle(),
+				             $record->ClassName,
+				             $record->getGenerateSearchLink()) . '<br>';
+			        try {
+				        SearchDocumentGenerator::make_document_for($record);
+			        } catch (Exception $e) {
+			        }
+		        }
+	        }
         }
         echo 'Completed';
     }

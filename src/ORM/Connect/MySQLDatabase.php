@@ -149,7 +149,7 @@ class MySQLDatabase extends SS_MySQLDatabase
         foreach ($lists as $class => $list) {
             /** @var SQLSelect $query */
             $query = $list->dataQuery()->query();
-
+            
             // There's no need to do all that joining
             $query->setFrom($sqlTables[$class]);
             $query->setSelect($select[$class]);
@@ -163,16 +163,25 @@ class MySQLDatabase extends SS_MySQLDatabase
         $fullQuery = implode(" UNION ", $querySQLs) . " ORDER BY $sortBy LIMIT $limit";
         
         Injector::inst()->get(LoggerInterface::class)->debug('query: ' . $fullQuery);
-	
+        
 	    // Get records
         $records = $this->preparedQuery($fullQuery, $queryParameters);
 
         $objects = array();
 
         foreach ($records as $record) {
-            $objects[] = DataList::create($record['ClassName'])->byID($record['ID']);
+            $result =  DataList::create($record['ClassName'])->byID($record['ID']);
+            if( empty($result) ){
+	            $totalCount--;
+            	continue;
+            }
+	        if (!$result->canView()) {
+	        	$totalCount--;
+		        continue;
+	        }
+	        $objects[] = $result;
         }
-
+        
         $list = new PaginatedList(new ArrayList($objects));
         $list->setPageStart($start);
         $list->setPageLength($pageLength);
